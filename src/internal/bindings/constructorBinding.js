@@ -10,12 +10,13 @@ function ConstructorBinding(dependencyId, constructor) {
 ConstructorBinding.prototype = Object.create(BindingWithArguments.prototype);
 ConstructorBinding.prototype.constructor = ConstructorBinding;
 
+// scope -- {Scope}
 // req -- {ResolutionRequest}
-ConstructorBinding.prototype.activate = function (req) {
+ConstructorBinding.prototype.activate = function (scope, req) {
     var activatedArgs = this.args.map(function (arg) {
-        return arg.activate(req.scope);
+        return arg.activate(scope);
     });
-    var out = Object.create(this.constructor.prototype);
+    var out = Object.create(this.constructorFunc.prototype);
     this.constructorFunc.apply(out, activatedArgs);
     return out;
 };

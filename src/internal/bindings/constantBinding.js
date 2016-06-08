@@ -10,7 +10,8 @@ function ConstantBinding(dependencyId, val) {
 ConstantBinding.prototype = Object.create(Binding.prototype);
 ConstantBinding.prototype.constructor = ConstantBinding;
 
+// scope -- {Scope}
 // req -- {ResolutionRequest}
-ConstantBinding.prototype.activate = function (req) {
+ConstantBinding.prototype.activate = function (scope, req) {
     return this.val;
 };

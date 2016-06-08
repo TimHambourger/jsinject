@@ -2,6 +2,7 @@ module.exports = ProviderBindingSyntax;
 
 var BindingSyntax = require('./bindingSyntax');
 
+// binding -- {ProviderBinding}
 function ProviderBindingSyntax(binding) {
     BindingSyntax.call(this, binding);
 }

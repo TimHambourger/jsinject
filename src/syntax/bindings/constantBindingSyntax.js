@@ -2,6 +2,7 @@ module.exports = ConstantBindingSyntax;
 
 var BindingSyntax = require('./bindingSyntax');
 
+// binding -- {ConstantBinding}
 function ConstantBindingSyntax(binding) {
     BindingSyntax.call(this, binding);
 }

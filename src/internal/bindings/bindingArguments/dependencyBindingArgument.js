@@ -1,7 +1,8 @@
 module.exports = DependencyBindingArgument;
 
 var BindingArgument = require('./bindingArgument'),
-    ResolutionParameters = require('../../resolutionParameters');
+    ResolutionParameters = require('../../../resolutionParameters'),
+    objectAssign = require('object-assign');
 
 function DependencyBindingArgument(dependencyId) {
     BindingArgument.call(this);
@@ -9,6 +10,7 @@ function DependencyBindingArgument(dependencyId) {
 }
 
 DependencyBindingArgument.prototype = Object.create(BindingArgument.prototype);
+objectAssign(DependencyBindingArgument.prototype, ResolutionParameters.prototype);
 DependencyBindingArgument.prototype.constructor = DependencyBindingArgument;
 
 // scope -- {Scope}

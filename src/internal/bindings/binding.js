@@ -8,16 +8,15 @@ function Binding(dependencyId) {
 
 // req -- {ResolutionRequest}
 Binding.prototype.supportsRequest = function (req) {
-    if (process.env.NODE_ENV !== 'production')
-        assert(req.dependencyId === this.dependencyId);
     return this.conditions.every(function (cond) {
         return cond(req);
     });
 };
 
 // Abstract. Subclasses must override.
+// scope -- {Scope}
 // req -- {ResolutionRequest}
-Binding.prototype.activate = function (req) {
+Binding.prototype.activate = function (scope, req) {
     throw new Error('Method not implemented.');
 };
 

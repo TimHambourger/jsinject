@@ -10,7 +10,8 @@ function ProviderBinding(dependencyId, provider) {
 ProviderBinding.prototype = Object.create(Binding.prototype);
 ProviderBinding.prototype.constructor = ProviderBinding;
 
+// scope -- {Scope}
 // req -- {ResolutionRequest}
-ProviderBinding.prototype.activate = function (req) {
-    return this.provider.call(null, req);
+ProviderBinding.prototype.activate = function (scope, req) {
+    return this.provider.call(null, scope, req);
 };

@@ -2,6 +2,7 @@ module.exports = FunctionBindingSyntax;
 
 var BindingSyntaxWithPossibleArguments = require('./bindingSyntaxWithPossibleArguments');
 
+// binding -- {FunctionBinding}
 function FunctionBindingSyntax(binding) {
     BindingSyntaxWithPossibleArguments.call(this, binding);
 }

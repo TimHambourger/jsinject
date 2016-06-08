@@ -16,23 +16,15 @@ BindingSyntax.prototype.when = function (cond) {
 
 // dependencyId -- {String}
 BindingSyntax.prototype.whenAnyAncestorIs = function (dependencyId) {
-    // coerce dependencyId to string
-    dependencyId = '' + dependencyId;
     return this.when(function (req) {
-        while (req = req.parentRequest) {
-            if (req.dependencyId === dependencyId) return true;
-        }
-        return false;
+        return req.anyAncestorIs(dependencyId);
     });
 };
 
 // dependencyId -- {String}
 BindingSyntax.prototype.whenRootRequestIs = function (dependencyId) {
-    // coerce dependencyId to string
-    dependencyId = '' + dependencyId;
     return this.when(function (req) {
-        while (req.parentRequest) req = req.parentRequest;
-        return req.dependencyId === dependencyId;
+        return req.rootRequestIs(dependencyId);
     });
 };
 

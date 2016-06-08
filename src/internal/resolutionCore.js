@@ -18,7 +18,7 @@ function ResolutionCore(opts) {
 // scope -- {Scope} The Scope that issued the request
 ResolutionCore.prototype.resolveParamsWithScope = function (params, scope) {
     var parentRequest = this.currentRequest;
-    var request = this.currentRequest = new ResolutionRequest(params.dependencyId, scope, parentRequest);
+    var request = this.currentRequest = new ResolutionRequest(params, parentRequest);
     var bindings = this.findAllBindingsForRequest(request);
     if (!params.multiple) {
         // For requests that aren't flagged as multiple, we enforce the constraint
@@ -34,7 +34,7 @@ ResolutionCore.prototype.resolveParamsWithScope = function (params, scope) {
             return scopeForBinding._cache[params.dependencyId] =
                 scopeForBinding._cache[params.dependencyId] || binding.activate(req);
         }
-        return binding.activate(req);
+        return binding.activate(scope, req);
     });
     this.currentRequest = parentRequest;
     return params.multiple ? resolutions : resolutions[0];
