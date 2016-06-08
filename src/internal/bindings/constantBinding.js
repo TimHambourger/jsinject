@@ -1,14 +1,14 @@
 module.exports = ConstantBinding;
 
-var Binding = require('./binding');
+var Binding = require('./binding'),
+    inherits = require('../../util/inherits');
 
 function ConstantBinding(dependencyId, val) {
     Binding.call(this, dependencyId);
     this.val = val;
 }
 
-ConstantBinding.prototype = Object.create(Binding.prototype);
-ConstantBinding.prototype.constructor = ConstantBinding;
+inherits(ConstantBinding, Binding);
 
 // scope -- {Scope}
 // req -- {ResolutionRequest}

@@ -1,14 +1,14 @@
 module.exports = ConstantBindingArgument;
 
-var BindingArgument = require('./bindingArgument');
+var BindingArgument = require('./bindingArgument'),
+    inherits = require('../../../util/inherits');
 
 function ConstantBindingArgument(val) {
     BindingArgument.call(this);
     this.val = val;
 }
 
-ConstantBindingArgument.prototype = Object.create(BindingArgument.prototype);
-ConstantBindingArgument.prototype.constructor = ConstantBindingArgument;
+inherits(ConstantBindingArgument, BindingArgument);
 
 // scope -- {Scope}
 ConstantBindingArgument.prototype.activate = function (scope) {

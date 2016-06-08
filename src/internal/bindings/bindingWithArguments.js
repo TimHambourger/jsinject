@@ -1,6 +1,7 @@
 module.exports = BindingWithArguments;
 
 var Binding = require('./binding'),
+    inherits = require('../../util/inherits'),
     ConstantBindingArgument = require('./bindingArguments/constantBindingArgument'),
     DependencyBindingArgument = require('./bindingArguments/dependencyBindingArgument');
 
@@ -9,8 +10,7 @@ function BindingWithArguments(dependencyId) {
     this.args = []; // array of BindingArgument instances
 }
 
-BindingWithArguments.prototype = Object.create(Binding.prototype);
-BindingWithArguments.prototype.constructor = BindingWithArguments;
+inherits(BindingWithArguments, Binding);
 
 BindingWithArguments.prototype.addConstantArgument = function (val) {
     var arg = new ConstantBindingArgument(val);

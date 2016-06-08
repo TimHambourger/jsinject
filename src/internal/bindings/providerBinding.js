@@ -1,14 +1,14 @@
 module.exports = ProviderBinding;
 
-var Binding = require('./binding');
+var Binding = require('./binding'),
+    inherits = require('../../util/inherits');
 
 function ProviderBinding(dependencyId, provider) {
     Binding.call(this, dependencyId);
     this.provider = provider;
 }
 
-ProviderBinding.prototype = Object.create(Binding.prototype);
-ProviderBinding.prototype.constructor = ProviderBinding;
+inherits(ProviderBinding, Binding);
 
 // scope -- {Scope}
 // req -- {ResolutionRequest}

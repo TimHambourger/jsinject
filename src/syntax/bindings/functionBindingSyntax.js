@@ -1,13 +1,13 @@
 module.exports = FunctionBindingSyntax;
 
-var BindingSyntaxWithPossibleArguments = require('./bindingSyntaxWithPossibleArguments');
+var BindingSyntaxWithPossibleArguments = require('./bindingSyntaxWithPossibleArguments'),
+    inherits = require('../../util/inherits');
 
 // binding -- {FunctionBinding}
 function FunctionBindingSyntax(binding) {
     BindingSyntaxWithPossibleArguments.call(this, binding);
 }
 
-FunctionBindingSyntax.prototype = Object.create(BindingSyntaxWithPossibleArguments.prototype);
-FunctionBindingSyntax.prototype.constructor = FunctionBindingSyntax;
+inherits(FunctionBindingSyntax, BindingSyntaxWithPossibleArguments);
 
 // Nothing to add.

@@ -1,14 +1,14 @@
 module.exports = BindingArgumentsSyntax;
 
 var BindingSyntax = require('./bindingSyntax'),
+    inherits = require('../../util/inherits'),
     DependencyBindingArgumentSyntax = require('./dependencyBindingArgumentSyntax');
 
 function BindingArgumentsSyntax(binding) {
     BindingSyntax.call(this, binding);
 }
 
-BindingArgumentsSyntax.prototype = Object.create(BindingSyntax.prototype);
-BindingArgumentsSyntax.prototype.constructor = BindingArgumentsSyntax;
+inherits(BindingArgumentsSyntax, BindingSyntax);
 
 BindingArgumentsSyntax.prototype.constant = function (val) {
     this._binding.addConstantArgument(val);
