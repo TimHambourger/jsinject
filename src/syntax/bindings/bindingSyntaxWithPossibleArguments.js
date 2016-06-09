@@ -2,7 +2,7 @@ module.exports = BindingSyntaxWithPossibleArguments;
 
 var BindingSyntax = require('./bindingSyntax'),
     inherits = require('../../util/inherits'),
-    BindingArgumentsSyntax = require('./bindingArgumentsSyntax');
+    BindingArgumentSyntax = require('./bindingArguments/bindingArgumentSyntax');
 
 function BindingSyntaxWithPossibleArguments(binding) {
     BindingSyntax.call(this, binding);
@@ -11,5 +11,5 @@ function BindingSyntaxWithPossibleArguments(binding) {
 inherits(BindingSyntaxWithPossibleArguments, BindingSyntax);
 
 BindingSyntaxWithPossibleArguments.prototype.withArguments = function () {
-    return new BindingArgumentsSyntax(this._binding);
+    return new BindingArgumentSyntax(this._binding);
 };
