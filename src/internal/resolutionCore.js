@@ -4,10 +4,16 @@ var ROOT_SCOPE_LEVEL = require('./rootScopeLevel');
 
 var ResolutionRequest = require('../resolutionRequest');
 
+var InjectionError = require('../injectionError'),
+    ErrorType = require('./errorType');
+
 var ConstructorBinding = require('./bindings/constructorBinding'),
     FunctionBinding = require('./bindings/functionBinding'),
     ConstantBinding = require('./binding/constantBinding'),
     ProviderBinding = require('./binding/providerBinding');
+
+// TODO: Make this configurable...
+var MAX_ACTIVATION_DEPTH = 500;
 
 function ResolutionCore(opts) {
     this.currentRequest = null;
@@ -18,13 +24,14 @@ function ResolutionCore(opts) {
 // scope -- {Scope} The Scope that issued the request
 ResolutionCore.prototype.resolveParamsWithScope = function (params, scope) {
     var parentRequest = this.currentRequest;
-    var request = this.currentRequest = new ResolutionRequest(params, parentRequest);
-    var bindings = this.findAllBindingsForRequest(request);
+    var req = this.currentRequest = new ResolutionRequest(params, parentRequest);
+    if (req.depth > MAX_ACTIVATION_DEPTH) throw new InjectionError(ErrorType.MaxActivationDepthExceeded, { request: req });
+    var bindings = this.findAllBindingsForRequest(req);
     if (!params.multiple) {
         // For requests that aren't flagged as multiple, we enforce the constraint
         // that there must be a single matching binding
-        if (bindings.length === 0) throw CustomErrors.NoMatchingBindings(req);
-        if (bindings.length > 1) throw CustomErrors.AmbiguousMatchingBindings(req);
+        if (bindings.length === 0) throw new InjectionError(ErrorType.NoMatchingBinding, { request: req });
+        if (bindings.length > 1) throw new InjectionError(ErrorType.AmbiguousMatchingBindings, { request: req });
     }
     var resolutions = bindings.map(function (binding) {
         if (binding.scopeLevel !== null) {
@@ -32,7 +39,7 @@ ResolutionCore.prototype.resolveParamsWithScope = function (params, scope) {
                 ? scope._rootScope
                 : scope._scopesByLevel[binding.scopeLevel];
             return scopeForBinding._cache[params.dependencyId] =
-                scopeForBinding._cache[params.dependencyId] || binding.activate(req);
+                scopeForBinding._cache[params.dependencyId] || binding.activate(scope, req);
         }
         return binding.activate(scope, req);
     });
@@ -42,7 +49,7 @@ ResolutionCore.prototype.resolveParamsWithScope = function (params, scope) {
 
 // req -- {ResolutionRequest}
 ResolutionCore.prototype.findAllBindingsForRequest = function (req) {
-    return (this.bindings[req.dependencyId] || []).filter(function (binding) {
+    return this.getSlot(dependencyId).filter(function (binding) {
         return binding.supportsRequest(req);
     });
 };
@@ -76,5 +83,7 @@ ResolutionCore.prototype.getOrCreateSlot = function (dependencyId) {
 };
 
 ResolutionCore.prototype.getSlot = function (dependencyId) {
-    return this.bindings[dependencyId] || [];
+    return Object.prototype.hasOwnProperty.call(this.bindings, dependencyId)
+        ? this.bindings[dependencyId]
+        : [];
 };
