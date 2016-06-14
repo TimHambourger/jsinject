@@ -1,6 +1,6 @@
 module.exports = ErrorType;
 
-ErrorType.NoMatchingBinding          = new ErrorType('ENOMAT',         'No matching bindings for dependency ID {dependencyId}.');
+ErrorType.NoMatchingBinding          = new ErrorType('ENOBIND',        'No matching bindings for dependency ID {dependencyId}.');
 ErrorType.AmbiguousMatchingBindings  = new ErrorType('EAMBIG',         'Ambiguous matching bindings for dependency ID {dependencyId}.');
 ErrorType.MaxActivationDepthExceeded = new ErrorType('EMAXDEPTH',      'Max activation depth exceeded.');
 ErrorType.NoMatchingScope            = new ErrorType('ENOSCOPE',       'No matching scope for scope level {scopeLevel}.');

@@ -3,7 +3,11 @@ module.exports = Binding;
 function Binding(dependencyId) {
     this.dependencyId = dependencyId;
     this.conditions = [];
-    this.scopeLevel = null;
+    // scopeLevelOrRoot -- can be
+    //   1) null, indicating unscoped
+    //   2) the ROOT_SCOPE_LEVEL object, indicating root scoped
+    //   3) a string, indicating scoped to a named child scope
+    this.scopeLevelOrRoot = null;
 }
 
 // req -- {ResolutionRequest}

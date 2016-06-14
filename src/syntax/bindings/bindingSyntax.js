@@ -31,7 +31,7 @@ BindingSyntax.prototype.whenRootRequestIs = function (dependencyId) {
 // TODO: More condition shorthands?
 
 BindingSyntax.prototype.inSingletonScope = function () {
-    this._binding.scopeLevel = ROOT_SCOPE_LEVEL;
+    this._binding.scopeLevelOrRoot = ROOT_SCOPE_LEVEL;
     // ends fluent syntax chain
 };
 
@@ -39,6 +39,6 @@ BindingSyntax.prototype.inSingletonScope = function () {
 BindingSyntax.prototype.inScopeLevel = function (scopeLevel) {
     // coerce scopeLevel to string
     scopeLevel = '' + scopeLevel;
-    this._binding.scopeLevel = scopeLevel;
+    this._binding.scopeLevelOrRoot = scopeLevel;
     // ends fluent syntax chain
 };

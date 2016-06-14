@@ -1,23 +1,21 @@
 module.exports = ResolutionCore;
 
-var ROOT_SCOPE_LEVEL = require('./rootScopeLevel');
-
-var ResolutionRequest = require('../resolutionRequest');
-
-var InjectionError = require('../injectionError'),
-    ErrorType = require('./errorType');
-
-var ConstructorBinding = require('./bindings/constructorBinding'),
+var ROOT_SCOPE_LEVEL = require('./rootScopeLevel'),
+    ResolutionRequest = require('../resolutionRequest'),
+    InjectionError = require('../injectionError'),
+    ErrorType = require('./errorType'),
+    ConstructorBinding = require('./bindings/constructorBinding'),
     FunctionBinding = require('./bindings/functionBinding'),
     ConstantBinding = require('./binding/constantBinding'),
-    ProviderBinding = require('./binding/providerBinding');
+    ProviderBinding = require('./binding/providerBinding'),
+    _Map = require('../util/map');
 
 // TODO: Make this configurable...
 var MAX_ACTIVATION_DEPTH = 500;
 
 function ResolutionCore(opts) {
     this.currentRequest = null;
-    this.bindings = {}; // Dictionary<string, Binding[]>
+    this.bindings = new _Map(); // Dictionary<string, Binding[]>
 }
 
 // params -- {ResolutionParameters} Params that describe the request
@@ -34,12 +32,8 @@ ResolutionCore.prototype.resolveParamsWithScope = function (params, scope) {
         if (bindings.length > 1) throw new InjectionError(ErrorType.AmbiguousMatchingBindings, { request: req });
     }
     var resolutions = bindings.map(function (binding) {
-        if (binding.scopeLevel !== null) {
-            var scopeForBinding = binding.scopeLevel === ROOT_SCOPE_LEVEL
-                ? scope._rootScope
-                : scope._scopesByLevel[binding.scopeLevel];
-            return scopeForBinding._cache[params.dependencyId] =
-                scopeForBinding._cache[params.dependencyId] || binding.activate(scope, req);
+        if (binding.scopeLevelOrRoot !== null) {
+            return scope._resolveScopedBinding(binding, req);
         }
         return binding.activate(scope, req);
     });
@@ -79,11 +73,10 @@ ResolutionCore.prototype.addProviderBinding = function (dependencyId, providerFu
 }; 
 
 ResolutionCore.prototype.getOrCreateSlot = function (dependencyId) {
-    return this.bindings[this.dependencyId] = this.getSlot(dependencyId);
+    if (!this.bindings.has(dependencyId)) this.bindings.set(dependencyId, []);
+    return this.bindings.get(dependencyId);
 };
 
 ResolutionCore.prototype.getSlot = function (dependencyId) {
-    return Object.prototype.hasOwnProperty.call(this.bindings, dependencyId)
-        ? this.bindings[dependencyId]
-        : [];
+    return this.bindings.has(dependencyId) ? this.bindings.get(dependencyId) : [];
 };
