@@ -4,7 +4,9 @@ var ROOT_SCOPE_LEVEL = require('./internal/rootScopeLevel'),
     _Map = require('./util/map'),
     CascadingMap = require('./util/cascadingMap'),
     InjectionError = require('./injectionError'),
-    ErrorType = require('./internal/errorType');
+    ErrorType = require('./internal/errorType'),
+    ResolutionParameters = require('./resolutionParameters'),
+    OpenResolutionSyntax = require('./syntax/resolution/openResolutionSyntax');
 
 // scopeLevel -- {string} Or null.
 // parentScope -- {Scope} Or null.
@@ -27,6 +29,17 @@ Scope.prototype.createChildScope = function (scopeLevel) {
     if (this._scopesByLevel.has(scopeLevel))
         throw new InjectionError(ErrorType.ScopeAlreadyExists, { scopeLevel: scopeLevel });
     return new Scope(scopeLevel, this, this._core);
+};
+
+Scope.prototype.get = function (dependencyId) {
+    return this.resolve(dependencyId).get();
+};
+
+Scope.prototype.resolve = function (dependencyId) {
+    // coerce to string
+    dependencyId = '' + dependencyId;
+    var params = new ResolutionParameters(dependencyId);
+    return new OpenResolutionSyntax(this, params);
 };
 
 // params -- {ResolutionParameters}

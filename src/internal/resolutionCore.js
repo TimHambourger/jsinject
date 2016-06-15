@@ -6,14 +6,14 @@ var ROOT_SCOPE_LEVEL = require('./rootScopeLevel'),
     ErrorType = require('./errorType'),
     ConstructorBinding = require('./bindings/constructorBinding'),
     FunctionBinding = require('./bindings/functionBinding'),
-    ConstantBinding = require('./binding/constantBinding'),
-    ProviderBinding = require('./binding/providerBinding'),
+    ConstantBinding = require('./bindings/constantBinding'),
+    ProviderBinding = require('./bindings/providerBinding'),
     _Map = require('../util/map');
 
 // TODO: Make this configurable...
 var MAX_ACTIVATION_DEPTH = 500;
 
-function ResolutionCore(opts) {
+function ResolutionCore() {
     this.currentRequest = null;
     this.bindings = new _Map(); // Dictionary<string, Binding[]>
 }
@@ -43,7 +43,7 @@ ResolutionCore.prototype.resolveParamsWithScope = function (params, scope) {
 
 // req -- {ResolutionRequest}
 ResolutionCore.prototype.findAllBindingsForRequest = function (req) {
-    return this.getSlot(dependencyId).filter(function (binding) {
+    return this.getSlot(req.dependencyId).filter(function (binding) {
         return binding.supportsRequest(req);
     });
 };

@@ -24,6 +24,6 @@ Binding.prototype.activate = function (scope, req) {
     throw new Error('Method not implemented.');
 };
 
-Binding.prototype.addCondition(cond) {
+Binding.prototype.addCondition = function (cond) {
     this.conditions.push(cond);
 };
