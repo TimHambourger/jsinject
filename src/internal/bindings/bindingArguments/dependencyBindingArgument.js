@@ -4,12 +4,12 @@ var BindingArgument = require('./bindingArgument'),
     ResolutionParameters = require('../../../resolutionParameters'),
     inherits = require('../../../util/inherits');
 
+inherits(DependencyBindingArgument, BindingArgument, ResolutionParameters);
+
 function DependencyBindingArgument(dependencyId) {
     BindingArgument.call(this);
     ResolutionParameters.call(this, dependencyId);
 }
-
-inherits(DependencyBindingArgument, BindingArgument, ResolutionParameters);
 
 // scope -- {Scope}
 DependencyBindingArgument.prototype.activate = function (scope) {

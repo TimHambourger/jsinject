@@ -1,6 +1,9 @@
 module.exports = ResolutionRequest;
 
-var ResolutionParameters = require('./resolutionParameters');
+var ResolutionParameters = require('./resolutionParameters'),
+    inherits = require('./util/inherits');
+
+inherits(ResolutionRequest, ResolutionParameters);
 
 // params {ResolutionParameters}
 // parentRequest {ResolutionRequest} -- may be null
@@ -10,9 +13,6 @@ function ResolutionRequest(params, parentRequest) {
     this.parentRequest = parentRequest;
     this.depth = parentRequest ? parentRequest.depth + 1 : 0;
 }
-
-ResolutionRequest.prototype = Object.create(ResolutionParameters.prototype);
-ResolutionRequest.prototype.constructor = ResolutionRequest;
 
 ResolutionRequest.prototype.anyAncestorIs = function (dependencyId) {
     // coerce dependencyId to string

@@ -1,7 +1,10 @@
 module.exports = InjectionError;
 
-var formatErrorMessage = require('./internal/formatErrorMessage'),
-    inherits = require('./util/inherits');
+var inherits = require('./util/inherits');
+
+inherits(InjectionError, Error);
+
+var formatErrorMessage = require('./internal/formatErrorMessage');
 
 function InjectionError(type, params) {
     this.name = 'InjectionError';
@@ -12,5 +15,3 @@ function InjectionError(type, params) {
     this.message = formatErrorMessage(type.template, params);
     this.code = type.code;
 }
-
-inherits(InjectionError, Error);

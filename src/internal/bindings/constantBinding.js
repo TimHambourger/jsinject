@@ -3,12 +3,12 @@ module.exports = ConstantBinding;
 var Binding = require('./binding'),
     inherits = require('../../util/inherits');
 
+inherits(ConstantBinding, Binding);
+
 function ConstantBinding(dependencyId, val) {
     Binding.call(this, dependencyId);
     this.val = val;
 }
-
-inherits(ConstantBinding, Binding);
 
 // scope -- {Scope}
 // req -- {ResolutionRequest}

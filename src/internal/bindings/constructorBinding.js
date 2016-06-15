@@ -3,12 +3,12 @@ module.exports = ConstructorBinding;
 var BindingWithArguments = require('./bindingWithArguments'),
     inherits = require('../../util/inherits');
 
+inherits(ConstructorBinding, BindingWithArguments);
+
 function ConstructorBinding(dependencyId, constructor) {
     BindingWithArguments.call(this, dependencyId);
     this.constructorFunc = constructor;
 }
-
-inherits(ConstructorBinding, BindingWithArguments);
 
 // scope -- {Scope}
 // req -- {ResolutionRequest}

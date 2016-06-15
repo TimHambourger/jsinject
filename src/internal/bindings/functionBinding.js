@@ -3,12 +3,12 @@ module.exports = FunctionBinding;
 var BindingWithArguments = require('./bindingWithArguments'),
     inherits = require('../../util/inherits');
 
+inherits(FunctionBinding, BindingWithArguments);
+
 function FunctionBinding(dependencyId, func) {
     BindingWithArguments.call(this, dependencyId);
     this.func = func;
 }
-
-inherits(FunctionBinding, BindingWithArguments);
 
 // scope -- {Scope}
 // req -- {ResolutionRequest}

@@ -3,11 +3,11 @@ module.exports = ConstantBindingSyntax;
 var BindingSyntax = require('./bindingSyntax'),
     inherits = require('../../util/inherits');
 
+inherits(ConstantBindingSyntax, BindingSyntax);
+
 // binding -- {ConstantBinding}
 function ConstantBindingSyntax(binding) {
     BindingSyntax.call(this, binding);
 }
-
-inherits(ConstantBindingSyntax, BindingSyntax);
 
 // Nothing else to add.
