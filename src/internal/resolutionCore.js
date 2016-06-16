@@ -8,7 +8,8 @@ var ROOT_SCOPE_LEVEL = require('./rootScopeLevel'),
     FunctionBinding = require('./bindings/functionBinding'),
     ConstantBinding = require('./bindings/constantBinding'),
     ProviderBinding = require('./bindings/providerBinding'),
-    _Map = require('../util/map');
+    _Map = require('../util/map'),
+    tryFinally = require('../util/tryFinally');
 
 // TODO: Make this configurable...
 var MAX_ACTIVATION_DEPTH = 500;
@@ -23,6 +24,15 @@ function ResolutionCore() {
 ResolutionCore.prototype.resolveParamsWithScope = function (params, scope) {
     var parentRequest = this.currentRequest;
     var req = this.currentRequest = new ResolutionRequest(params, parentRequest);
+
+    return tryFinally(function () {
+        return this.resolveParamsWithScopeAndRequest(params, scope, req);
+    }, function () {
+        this.currentRequest = parentRequest;
+    }, this);
+};
+
+ResolutionCore.prototype.resolveParamsWithScopeAndRequest = function (params, scope, req) {
     if (req.depth > MAX_ACTIVATION_DEPTH) throw new InjectionError(ErrorType.MaxActivationDepthExceeded, { request: req });
     var bindings = this.findAllBindingsForRequest(req);
     if (!params.multiple) {
@@ -37,7 +47,6 @@ ResolutionCore.prototype.resolveParamsWithScope = function (params, scope) {
         }
         return binding.activate(scope, req);
     });
-    this.currentRequest = parentRequest;
     return params.multiple ? resolutions : resolutions[0];
 };
 
