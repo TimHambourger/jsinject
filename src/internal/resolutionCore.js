@@ -8,7 +8,7 @@ var ROOT_SCOPE_LEVEL = require('./rootScopeLevel'),
     FunctionBinding = require('./bindings/functionBinding'),
     ConstantBinding = require('./bindings/constantBinding'),
     ProviderBinding = require('./bindings/providerBinding'),
-    _Map = require('../util/map'),
+    SlotMap = require('../util/slotMap'),
     tryFinally = require('../util/tryFinally');
 
 // TODO: Make this configurable...
@@ -16,7 +16,7 @@ var MAX_ACTIVATION_DEPTH = 500;
 
 function ResolutionCore() {
     this.currentRequest = null;
-    this.bindings = new _Map(); // Dictionary<string, Binding[]>
+    this.bindings = new SlotMap(); // Dictionary<string, Binding[]>
 }
 
 // params -- {ResolutionParameters} Params that describe the request
@@ -52,40 +52,31 @@ ResolutionCore.prototype.resolveParamsWithScopeAndRequest = function (params, sc
 
 // req -- {ResolutionRequest}
 ResolutionCore.prototype.findAllBindingsForRequest = function (req) {
-    return this.getSlot(req.dependencyId).filter(function (binding) {
+    return this.bindings.getSlot(req.dependencyId).filter(function (binding) {
         return binding.supportsRequest(req);
     });
 };
 
 ResolutionCore.prototype.addConstructorBinding = function (dependencyId, constructor) {
     var binding = new ConstructorBinding(dependencyId, constructor);
-    this.getOrCreateSlot(dependencyId).push(binding);
+    this.bindings.getOrCreateSlot(dependencyId).push(binding);
     return binding;
 };
 
 ResolutionCore.prototype.addFunctionBinding = function (dependencyId, factoryFunc) {
     var binding = new FunctionBinding(dependencyId, factoryFunc);
-    this.getOrCreateSlot(dependencyId).push(binding);
+    this.bindings.getOrCreateSlot(dependencyId).push(binding);
     return binding;
 };
 
 ResolutionCore.prototype.addConstantBinding = function (dependencyId, val) {
     var binding = new ConstantBinding(dependencyId, val);
-    this.getOrCreateSlot(dependencyId).push(binding);
+    this.bindings.getOrCreateSlot(dependencyId).push(binding);
     return binding;
 };
 
 ResolutionCore.prototype.addProviderBinding = function (dependencyId, providerFunc) {
     var binding = new ProviderBinding(dependencyId, providerFunc);
-    this.getOrCreateSlot(dependencyId).push(binding);
+    this.bindigns.getOrCreateSlot(dependencyId).push(binding);
     return binding;
 }; 
-
-ResolutionCore.prototype.getOrCreateSlot = function (dependencyId) {
-    this.bindings.set(dependencyId, this.getSlot(dependencyId));
-    return this.bindings.get(dependencyId);
-};
-
-ResolutionCore.prototype.getSlot = function (dependencyId) {
-    return this.bindings.has(dependencyId) ? this.bindings.get(dependencyId) : [];
-};

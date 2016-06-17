@@ -8,38 +8,34 @@ var hasBareObjects = require('./hasBareObjects');
 
 module.exports = hasNativeMap() ? Map : hasBareObjects() ? BareObjectMap : ObjectPrototypeMap;
 
-var inherits = require('./inherits');
+var ObjectMapBase = require('./objectMapBase'),
+    inherits = require('./inherits');
+
+inherits(BareObjectMap, ObjectMapBase);
+inherits(ObjectPrototypeMap, ObjectMapBase);
 
 function hasNativeMap() {
     try {
-        return typeof Map === 'function';
+        var map = new Map(), o = {};
+        if (map.has(o)) return false;
+        map.set(o, 7);
+        if (!map.has(o) || map.get(o) !== 7) return false;
+        map.delete(o);
+        if (map.has(o)) return false;
+        map.set(o, 7).clear();
+        if (map.has(o)) return false;
+        return true;
     } catch (ex) {
         return false;
     }
 }
 
 
-// Abstract. Common methods between our map implementations
-function ObjectMapBase() {}
-
-ObjectMapBase.prototype['delete'] = function (key) {
-    var has = this.has(key);
-    delete this._obj[key];
-    return has;
-};
-
-ObjectMapBase.prototype.set = function (key, value) {
-    this._obj[key] = value;
-    return this;
-};
-
-
 // Map API provided through prototype-less object.
 function BareObjectMap() {
+    ObjectMapBase.call(this);
     this.clear();
 }
-
-inherits(BareObjectMap, ObjectMapBase);
 
 BareObjectMap.prototype.clear = function () {
     this._obj = Object.create(null);
@@ -56,10 +52,9 @@ BareObjectMap.prototype.has = function (key) {
 
 // Map API provided through object that inherits from Object.prototype
 function ObjectPrototypeMap() {
+    ObjectMapBase.call(this);
     this.clear();
 }
-
-inherits(ObjectPrototypeMap, ObjectMapBase);
 
 ObjectPrototypeMap.prototype.clear = function () {
     this._obj = {};

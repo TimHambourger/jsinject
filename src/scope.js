@@ -1,7 +1,7 @@
 module.exports = Scope;
 
 var ROOT_SCOPE_LEVEL = require('./internal/rootScopeLevel'),
-    _Map = require('./util/map'),
+    DependencyCache = require('./internal/dependencyCache'),
     CascadingMap = require('./util/cascadingMap'),
     InjectionError = require('./injectionError'),
     ErrorType = require('./internal/errorType'),
@@ -11,13 +11,14 @@ var ROOT_SCOPE_LEVEL = require('./internal/rootScopeLevel'),
 // scopeLevel -- {string} Or null.
 // parentScope -- {Scope} Or null.
 // core -- {ResolutionCore}
-function Scope(scopeLevel, parentScope, core) {
+function Scope(scopeLevel, parentScope, core, disposal) {
     var isRoot = !parentScope;
 
     this.scopeLevel = scopeLevel;
     this.isRoot = isRoot;
     this._core = core;
-    this._cache = new _Map();
+    this._disposal = disposal;
+    this._cache = new DependencyCache(disposal);
     this._scopesByLevel = isRoot ? new CascadingMap() : parentScope._scopesByLevel.createChildMap();
     if (scopeLevel !== null) this._scopesByLevel.set(scopeLevel, this);
     this._rootScope = isRoot ? this : parentScope._rootScope;
@@ -28,7 +29,7 @@ Scope.prototype.createChildScope = function (scopeLevel) {
     scopeLevel = '' + scopeLevel;
     if (this._scopesByLevel.has(scopeLevel))
         throw new InjectionError(ErrorType.ScopeAlreadyExists, { scopeLevel: scopeLevel });
-    return new Scope(scopeLevel, this, this._core);
+    return new Scope(scopeLevel, this, this._core, this._disposal);
 };
 
 Scope.prototype.get = function (dependencyId) {
@@ -40,6 +41,10 @@ Scope.prototype.resolve = function (dependencyId) {
     dependencyId = '' + dependencyId;
     var params = new ResolutionParameters(dependencyId);
     return new OpenResolutionSyntax(this, params);
+};
+
+Scope.prototype.release = function () {
+    this._cache.dispose();
 };
 
 // params -- {ResolutionParameters}
@@ -56,10 +61,7 @@ Scope.prototype._resolveScopedBinding = function (binding, req) {
 // Get or activate a binding that is scoped to this scope level
 // NOTE: reqScope -- the requesting scope
 Scope.prototype._getOrActivateBinding = function (binding, req, reqScope) {
-    if (!this._cache.has(binding.dependencyId)) {
-        this._cache.set(binding.dependencyId, binding.activate(reqScope, req));
-    }
-    return this._cache.get(binding.dependencyId);
+    return this._cache.getOrActivateBinding(binding, req, reqScope);
 };
 
 // Lookup the appropriate parent scope for the given scope level
