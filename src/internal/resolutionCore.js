@@ -82,7 +82,7 @@ ResolutionCore.prototype.addProviderBinding = function (dependencyId, providerFu
 }; 
 
 ResolutionCore.prototype.getOrCreateSlot = function (dependencyId) {
-    if (!this.bindings.has(dependencyId)) this.bindings.set(dependencyId, []);
+    this.bindings.set(dependencyId, this.getSlot(dependencyId));
     return this.bindings.get(dependencyId);
 };
 

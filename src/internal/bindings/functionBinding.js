@@ -13,8 +13,6 @@ function FunctionBinding(dependencyId, func) {
 // scope -- {Scope}
 // req -- {ResolutionRequest}
 FunctionBinding.prototype.activate = function (scope, req) {
-    var activatedArgs = this.args.map(function (arg) {
-        return arg.activate(scope);
-    });
+    var activatedArgs = this.activateArgs(scope);
     return this.func.apply(null, activatedArgs);
 };

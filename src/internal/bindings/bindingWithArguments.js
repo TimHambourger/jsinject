@@ -13,6 +13,12 @@ function BindingWithArguments(dependencyId) {
     this.args = []; // array of BindingArgument instances
 }
 
+BindingWithArguments.prototype.activateArgs = function (scope) {
+    return this.args.map(function (arg) {
+        return arg.activate(scope);
+    });
+};
+
 BindingWithArguments.prototype.addConstantArgument = function (val) {
     var arg = new ConstantBindingArgument(val);
     this.args.push(arg);
