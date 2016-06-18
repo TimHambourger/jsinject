@@ -37,3 +37,13 @@ Kernel.prototype.addDisposeCallbackForDep = function (dependencyId, cb) {
 Kernel.prototype.removeDisposeCallbackForDep = function (dependencyId, cb) {
     this._disposal.removeDisposeCallbackForDep(dependencyId, cb);
 };
+
+// Convenience method. Use like:
+// 
+//   var kernel = new Kernel();
+//   kernel.addDisposeCallback(Kernel.disposeMethodDisposalStrategy);
+// 
+// Then dependencies handle their own disposal logic by exposing a dispose method. 
+Kernel.disposeMethodDisposalStrategy = function (dependency, dependencyId) {
+    if (dependency && typeof dependency.dispose === 'function') dependency.dispose();
+};
