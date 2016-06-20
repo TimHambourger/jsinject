@@ -8,6 +8,7 @@ var ROOT_SCOPE_LEVEL = require('./rootScopeLevel'),
     FunctionBinding = require('./bindings/functionBinding'),
     ConstantBinding = require('./bindings/constantBinding'),
     ProviderBinding = require('./bindings/providerBinding'),
+    CascadingMap = require('../util/cascadingMap'),
     SlotMap = require('../util/slotMap'),
     tryFinally = require('../util/tryFinally');
 
@@ -16,12 +17,18 @@ var MAX_ACTIVATION_DEPTH = 500;
 
 function ResolutionCore() {
     this.currentRequest = null;
+    this.currentOverrides = null;
     this.bindings = new SlotMap(); // Dictionary<string, Binding[]>
 }
 
 // params -- {ResolutionParameters} Params that describe the request
 // scope -- {Scope} The Scope that issued the request
 ResolutionCore.prototype.resolveParamsWithScope = function (params, scope) {
+    if (params.lazy) return this.resolveLazy(params, scope);
+    return this.resolveImmediate(params, scope);
+};
+
+ResolutionCore.prototype.resolveImmediate = function (params, scope) {
     var parentRequest = this.currentRequest;
     var req = this.currentRequest = new ResolutionRequest(params, parentRequest);
 
@@ -32,8 +39,41 @@ ResolutionCore.prototype.resolveParamsWithScope = function (params, scope) {
     }, this);
 };
 
+ResolutionCore.prototype.resolveLazy = function (params, scope) {
+    var parentRequest = this.currentRequest,
+        parentOverrides = this.currentOverrides,
+        self = this;
+
+    return function lazyResolution() {
+        var oldCurrentRequest = self.currentRequest,
+            oldCurrentOverrides = self.currentOverrides;
+        var req = self.currentRequest = new ResolutionRequest(params, parentRequest);
+        var overrides = self.currentOverrides = parentOverrides ? parentOverrides.createChildMap() : new CascadingMap();
+
+        // Populate overrides for all requests in this dependency tree 
+        for (var i = 0; i < params.lazyArgs.length; i++) {
+            overrides.set(params.lazyArgs[i].dependencyId, arguments[i]);
+        }            
+
+        return tryFinally(function () {
+            return this.resolveParamsWithScopeAndRequest(params, scope, req);
+        }, function () {
+            this.currentRequest = oldCurrentRequest;
+            this.currentOverrides = oldCurrentOverrides;
+        }, self);
+    }; 
+};
+
 ResolutionCore.prototype.resolveParamsWithScopeAndRequest = function (params, scope, req) {
     if (req.depth > MAX_ACTIVATION_DEPTH) throw new InjectionError(ErrorType.MaxActivationDepthExceeded, { request: req });
+
+    if (this.currentOverrides && this.currentOverrides.has(params.dependencyId)) {
+        // If an override is found, we bypass any attempt to lookup bindings.
+        // In effect, an override acts like the one and only binding for a dependency, whether or not any bindings exist.
+        var resolution = this.currentOverrides.get(params.dependencyId);
+        return params.multiple ? [resolution] : resolution;
+    }
+
     var bindings = this.findAllBindingsForRequest(req);
     if (!params.multiple) {
         // For requests that aren't flagged as multiple, we enforce the constraint

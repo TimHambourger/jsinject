@@ -18,6 +18,7 @@ function formatErrorMessage(template, params) {
 function formatRequestStack(req) {
     var lines = [], i = 0;
     while (req && i < MAX_REQUEST_STACK_OUTPUT) {
+        if (req.lazy) lines.push('  (from lazy resolution)');
         lines.push('  from request for dependency ID ' + JSON.stringify(req.dependencyId));
         req = req.parentRequest;
         i++

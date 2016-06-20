@@ -5,11 +5,12 @@ var ResolutionParameters = require('./resolutionParameters'),
 
 inherits(ResolutionRequest, ResolutionParameters);
 
+var objectAssign = require('object-assign');
+
 // params {ResolutionParameters}
 // parentRequest {ResolutionRequest} -- may be null
 function ResolutionRequest(params, parentRequest) {
-    ResolutionParameters.call(this, params.dependencyId);
-    this.multiple = params.multiple;
+    objectAssign(this, params);
     this.parentRequest = parentRequest;
     this.depth = parentRequest ? parentRequest.depth + 1 : 0;
 }

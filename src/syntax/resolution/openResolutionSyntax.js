@@ -5,14 +5,19 @@ var ResolutionSyntax = require('./resolutionSyntax'),
 
 inherits(OpenResolutionSyntax, ResolutionSyntax);
 
+var MultipleResolutionSyntax = require('./multipleResolutionSyntax'),
+    LazyResolutionSyntax = require('./lazyResolutionSyntax');
+
 function OpenResolutionSyntax(scope, params) {
     ResolutionSyntax.call(this, scope, params);
 }
 
 OpenResolutionSyntax.prototype.multiple = function () {
     this._params.multiple = true;
-    // TODO: Lazy syntax... This won't just return a plain ResolutionSyntax...
-    return new ResolutionSyntax(this._scope, this._params);
+    return new MultipleResolutionSyntax(this._scope, this._params);
 };
 
-// TODO: Lazy syntax...
+OpenResolutionSyntax.prototype.lazy = function () {
+    this._params.lazy = true;
+    return new LazyResolutionSyntax(this._scope, this._params);
+};
