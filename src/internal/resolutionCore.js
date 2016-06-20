@@ -98,25 +98,22 @@ ResolutionCore.prototype.findAllBindingsForRequest = function (req) {
 };
 
 ResolutionCore.prototype.addConstructorBinding = function (dependencyId, constructor) {
-    var binding = new ConstructorBinding(dependencyId, constructor);
-    this.bindings.getOrCreateSlot(dependencyId).push(binding);
-    return binding;
+    return this.addBinding(new ConstructorBinding(dependencyId, constructor));
 };
 
 ResolutionCore.prototype.addFunctionBinding = function (dependencyId, factoryFunc) {
-    var binding = new FunctionBinding(dependencyId, factoryFunc);
-    this.bindings.getOrCreateSlot(dependencyId).push(binding);
-    return binding;
+    return this.addBinding(new FunctionBinding(dependencyId, factoryFunc));
 };
 
 ResolutionCore.prototype.addConstantBinding = function (dependencyId, val) {
-    var binding = new ConstantBinding(dependencyId, val);
-    this.bindings.getOrCreateSlot(dependencyId).push(binding);
-    return binding;
+    return this.addBinding(new ConstantBinding(dependencyId, val));
 };
 
 ResolutionCore.prototype.addProviderBinding = function (dependencyId, providerFunc) {
-    var binding = new ProviderBinding(dependencyId, providerFunc);
-    this.bindings.getOrCreateSlot(dependencyId).push(binding);
+    return this.addBinding(new ProviderBinding(dependencyId, providerFunc));
+};
+
+ResolutionCore.prototype.addBinding = function (binding) {
+    this.bindings.getOrCreateSlot(binding.dependencyId).push(binding);
     return binding;
 }; 
