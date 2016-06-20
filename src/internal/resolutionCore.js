@@ -117,6 +117,6 @@ ResolutionCore.prototype.addConstantBinding = function (dependencyId, val) {
 
 ResolutionCore.prototype.addProviderBinding = function (dependencyId, providerFunc) {
     var binding = new ProviderBinding(dependencyId, providerFunc);
-    this.bindigns.getOrCreateSlot(dependencyId).push(binding);
+    this.bindings.getOrCreateSlot(dependencyId).push(binding);
     return binding;
 }; 
