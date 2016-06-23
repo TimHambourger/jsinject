@@ -11,6 +11,8 @@ function LazyMultipleResolutionSyntax(scope, params) {
     ResolutionSyntax.call(this, scope, params);
 }
 
-LazyMultipleResolutionSyntax.prototype.withLazyArguments = function () {
+var p = LazyMultipleResolutionSyntax.prototype;
+
+p.withLazyArguments = p.withLazyArgs = function () {
     return new LazyArgumentResolutionSyntax(this._scope, this._params);
 };

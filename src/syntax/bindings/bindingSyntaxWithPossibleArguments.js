@@ -11,6 +11,8 @@ function BindingSyntaxWithPossibleArguments(binding) {
     BindingSyntax.call(this, binding);
 }
 
-BindingSyntaxWithPossibleArguments.prototype.withArguments = function () {
+var p = BindingSyntaxWithPossibleArguments.prototype;
+
+p.withArguments = p.withArgs = function () {
     return new BindingArgumentSyntax(this._binding);
 };

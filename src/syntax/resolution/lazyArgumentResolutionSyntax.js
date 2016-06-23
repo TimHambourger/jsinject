@@ -11,7 +11,9 @@ function LazyArgumentResolutionSyntax(scope, params) {
     ResolutionSyntax.call(this, scope, params);
 }
 
-LazyArgumentResolutionSyntax.prototype.forDep = function (dependencyId) {
+var p = LazyArgumentResolutionSyntax.prototype;
+
+p.forDependency = p.forDep = function (dependencyId) {
     this._params.lazyArgs.push(new LazyArgument(dependencyId));
     return this; // all the same syntax available after calling forDep as before
 };

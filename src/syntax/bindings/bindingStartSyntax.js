@@ -10,19 +10,21 @@ function BindingStartSyntax(dependencyId, core) {
     this._core = core;
 }
 
-BindingStartSyntax.prototype.toConstructor = function (constructor) {
+var p = BindingStartSyntax.prototype;
+
+p.toConstructor = p.toCtor = function (constructor) {
     return new ConstructorBindingSyntax(this._core.addConstructorBinding(this._dependencyId, constructor));
 };
 
-BindingStartSyntax.prototype.toFunc = function (func) {
+p.toFunction = p.toFunc = function (func) {
     return new FunctionBindingSyntax(this._core.addFunctionBinding(this._dependencyId, func));
 };
 
-BindingStartSyntax.prototype.toConstant = function (val) {
+p.toConstant = p.toConst = function (val) {
     return new ConstantBindingSyntax(this._core.addConstantBinding(this._dependencyId, val));
 }; 
 
-BindingStartSyntax.prototype.toProvider = function (provider) {
+p.toProvider = function (provider) {
     return new ProviderBindingSyntax(this._core.addProviderBinding(this._dependencyId, provider));
 };
 

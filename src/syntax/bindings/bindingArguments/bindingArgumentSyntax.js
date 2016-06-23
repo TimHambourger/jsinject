@@ -16,12 +16,14 @@ function BindingArgumentSyntax(binding) {
     BindingSyntax.call(this, binding);
 }
 
-BindingArgumentSyntax.prototype.constant = function (val) {
+var p = BindingArgumentSyntax.prototype;
+
+p.constant = p['const'] = function (val) {
     this._binding.addConstantArgument(val);
     return this; // All the same syntax is available after calling .constant as before
 };
 
-BindingArgumentSyntax.prototype.dep = function (dependencyId) {
+p.dependency = p.dep = function (dependencyId) {
     return new OpenDependencyBindingArgumentSyntax(this._binding,
         this._binding.addDependencyArgument(dependencyId));
 };

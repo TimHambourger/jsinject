@@ -11,6 +11,8 @@ function LazyMultipleDependencyBindingArgumentSyntax(binding, arg) {
     DependencyBindingArgumentSyntax.call(this, binding, arg);
 }
 
-LazyMultipleDependencyBindingArgumentSyntax.prototype.withLazyArguments = function () {
+var p = LazyMultipleDependencyBindingArgumentSyntax.prototype;
+
+p.withLazyArguments = p.withLazyArgs = function () {
     return new LazyArgumentDependencyBindingArgumentSyntax(this._binding, this._arg);
 };
