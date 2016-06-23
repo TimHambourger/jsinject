@@ -5,6 +5,8 @@ var BindingWithArguments = require('./bindingWithArguments'),
 
 inherits(ConstructorBinding, BindingWithArguments);
 
+var construct = require('../../util/construct');
+
 function ConstructorBinding(dependencyId, constructor) {
     BindingWithArguments.call(this, dependencyId);
     this.constructorFunc = constructor;
@@ -14,7 +16,5 @@ function ConstructorBinding(dependencyId, constructor) {
 // req -- {ResolutionRequest}
 ConstructorBinding.prototype.activate = function (scope, req) {
     var activatedArgs = this.activateArgs(scope);
-    var out = Object.create(this.constructorFunc.prototype);
-    this.constructorFunc.apply(out, activatedArgs);
-    return out;
+    return construct(this.constructorFunc, activatedArgs);
 };
