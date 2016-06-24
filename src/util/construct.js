@@ -46,7 +46,7 @@ function constructWithBind(ctor, args) {
 // Since this method doesn't use the new keyword, we lose support for native constructors like Date and Number and for native ES6 class constructors.
 // But we can still support most vanilla ES5 constructor functions.
 function constructWithObjectCreate(ctor, args) {
-    var proto = Object.prototype.isPrototypeOf(ctor.prototype) ? ctor.prototype : {};
+    var proto = Object.prototype.isPrototypeOf(ctor.prototype) ? ctor.prototype : Object.prototype;
     var thisArg = Object.create(proto);
     var returnValue = ctor.apply(thisArg, args);
     return Object.prototype.isPrototypeOf(returnValue) ? returnValue : thisArg;
