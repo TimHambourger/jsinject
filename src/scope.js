@@ -11,13 +11,14 @@ var ROOT_SCOPE_LEVEL = require('./internal/rootScopeLevel'),
 // scopeLevel -- {string} Or null.
 // parentScope -- {Scope} Or null.
 // core -- {ResolutionCore}
-function Scope(scopeLevel, parentScope, core, disposal) {
+function Scope(scopeLevel, parentScope, core, disposal, configAccessor) {
     var isRoot = !parentScope;
 
     this.scopeLevel = scopeLevel;
     this.isRoot = isRoot;
     this._core = core;
     this._disposal = disposal;
+    this._configAccessor = configAccessor;
     this._cache = new DependencyCache(disposal);
     this._scopesByLevel = isRoot ? new CascadingMap() : parentScope._scopesByLevel.createChildMap();
     if (scopeLevel !== null) this._scopesByLevel.set(scopeLevel, this);
@@ -28,8 +29,8 @@ Scope.prototype.createChildScope = function (scopeLevel) {
     // coerce scopeLevel to string
     scopeLevel = '' + scopeLevel;
     if (this._scopesByLevel.has(scopeLevel))
-        throw new InjectionError(ErrorType.ScopeAlreadyExists, { scopeLevel: scopeLevel });
-    return new Scope(scopeLevel, this, this._core, this._disposal);
+        throw new InjectionError(ErrorType.ScopeAlreadyExists, this._configAccessor, { scopeLevel: scopeLevel });
+    return new Scope(scopeLevel, this, this._core, this._disposal, this._configAccessor);
 };
 
 Scope.prototype.get = function (dependencyId) {
@@ -68,5 +69,5 @@ Scope.prototype._getOrActivateBinding = function (binding, req, reqScope) {
 Scope.prototype._lookupScopeForRequest = function (scopeLevelOrRoot, req) {
     if (scopeLevelOrRoot === ROOT_SCOPE_LEVEL) return this._rootScope;
     if (this._scopesByLevel.has(scopeLevelOrRoot)) return this._scopesByLevel.get(scopeLevelOrRoot);
-    throw new InjectionError(ErrorType.NoMatchingScope, { scopeLevel: scopeLevelOrRoot, request: req });
+    throw new InjectionError(ErrorType.NoMatchingScope, this._configAccessor, { scopeLevel: scopeLevelOrRoot, request: req });
 };

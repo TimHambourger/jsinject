@@ -12,10 +12,8 @@ var ROOT_SCOPE_LEVEL = require('./rootScopeLevel'),
     SlotMap = require('../util/slotMap'),
     tryFinally = require('../util/tryFinally');
 
-// TODO: Make this configurable...
-var MAX_ACTIVATION_DEPTH = 500;
-
-function ResolutionCore() {
+function ResolutionCore(configAccessor) {
+    this.configAccessor = configAccessor;
     this.currentRequest = null;
     this.currentOverrides = null;
     this.bindings = new SlotMap(); // Dictionary<string, Binding[]>
@@ -65,7 +63,8 @@ ResolutionCore.prototype.resolveLazy = function (params, scope) {
 };
 
 ResolutionCore.prototype.resolveParamsWithScopeAndRequest = function (params, scope, req) {
-    if (req.depth > MAX_ACTIVATION_DEPTH) throw new InjectionError(ErrorType.MaxActivationDepthExceeded, { request: req });
+    var maxActivationDepth = this.configAccessor.get('maxActivationDepth');
+    if (maxActivationDepth >= 0 && req.depth > maxActivationDepth) throw new InjectionError(ErrorType.MaxActivationDepthExceeded, this.configAccessor, { request: req });
 
     if (this.currentOverrides && this.currentOverrides.has(params.dependencyId)) {
         // If an override is found, we bypass any attempt to lookup bindings.
@@ -78,8 +77,8 @@ ResolutionCore.prototype.resolveParamsWithScopeAndRequest = function (params, sc
     if (!params.multiple) {
         // For requests that aren't flagged as multiple, we enforce the constraint
         // that there must be a single matching binding
-        if (bindings.length === 0) throw new InjectionError(ErrorType.NoMatchingBinding, { request: req });
-        if (bindings.length > 1) throw new InjectionError(ErrorType.AmbiguousMatchingBindings, { request: req });
+        if (bindings.length === 0) throw new InjectionError(ErrorType.NoMatchingBinding, this.configAccessor, { request: req });
+        if (bindings.length > 1) throw new InjectionError(ErrorType.AmbiguousMatchingBindings, this.configAccessor, { request: req });
     }
     var resolutions = bindings.map(function (binding) {
         if (binding.scopeLevelOrRoot !== null) {

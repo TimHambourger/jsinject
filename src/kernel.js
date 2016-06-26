@@ -5,21 +5,30 @@ var Scope = require('./scope'),
 
 inherits(Kernel, Scope);
 
-var ResolutionCore = require('./internal/resolutionCore'),
+var Config = require('./internal/config'),
+    ResolutionCore = require('./internal/resolutionCore'),
     DependencyDisposal = require('./internal/dependencyDisposal'),
     BindingStartSyntax = require('./syntax/bindings/bindingStartSyntax');
 
-function Kernel() {
-    var core = new ResolutionCore(),
+function Kernel(opts) {
+    this._config = new Config(opts);
+    var configAccessor = this._config.accessor(),
+        core = new ResolutionCore(configAccessor),
         disposal = new DependencyDisposal();
+
     // Root scope has null scopeLevel and null parentScope
-    Scope.call(this, null, null, core, disposal);
+    Scope.call(this, null, null, core, disposal, configAccessor);
 }
 
 Kernel.prototype.bind = function (dependencyId) {
     // Coerce dependencyId to string
     dependencyId = '' + dependencyId;
     return new BindingStartSyntax(dependencyId, this._core);
+};
+
+Kernel.prototype.config = function (opts) {
+    this._config.set(opts);
+    return this._config.accessor();
 };
 
 Kernel.prototype.addDisposeCallback = function (cb) {
