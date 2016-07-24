@@ -8,7 +8,8 @@ inherits(Kernel, Scope);
 var Config = require('./internal/config'),
     ResolutionCore = require('./internal/resolutionCore'),
     DependencyDisposal = require('./internal/dependencyDisposal'),
-    BindingStartSyntax = require('./syntax/bindings/bindingStartSyntax');
+    BindingStartSyntax = require('./syntax/bindings/bindingStartSyntax'),
+    InjectionError = require('./injectionError');
 
 function Kernel(opts) {
     this._config = new Config(opts);
@@ -56,3 +57,6 @@ Kernel.prototype.removeDisposeCallbackForDep = function (dependencyId, cb) {
 Kernel.disposeMethodDisposalStrategy = function (dependency, dependencyId) {
     if (dependency && typeof dependency.dispose === 'function') dependency.dispose();
 };
+
+// Expose InjectionError to enable instanceof error testing
+Kernel.InjectionError = InjectionError;
