@@ -1,4 +1,4 @@
-var Kernel = require('../src/kernel');
+var Kernel = require('../../src/kernel');
 
 describe('kernel.resolve(...).get', function () {
     runSpec(resolve);
