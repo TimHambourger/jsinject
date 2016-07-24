@@ -14,7 +14,7 @@ function runSpec(resolveFn) {
         var kernel = new Kernel();
         kernel.bind('foo').toConstructor(Foo);
         var foo = resolveFn(kernel, 'foo');
-        expect(foo).toBeInstanceOf(Fo);
+        expect(foo).toBeInstanceOf(Foo);
         expect(foo.fooStuff).toBe('foo stuff'); 
 
         function Foo() {
